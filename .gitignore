@@ -1,0 +1,9 @@
+*.dylib
+*.so
+*.a
+*.o
+*.lo
+*.la
+*.lai
+*.dSYM/
+.DS_Store

@@ -1,0 +1,41 @@
+name: Build macOS x86_64 IRMP
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-macos-x86_64:
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install glib
+
+      - name: Build x86_64 shared library
+        run: |
+          set -euxo pipefail
+          clang -arch x86_64 \
+            -shared -fPIC \
+            -Dunix \
+            -I. \
+            -o libirmp.dylib \
+            irmp-main-sharedlib.c \
+            -lglib-2.0
+
+      - name: Verify architecture
+        run: |
+          file libirmp.dylib
+          lipo -info libirmp.dylib
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libirmp-macos-x86_64
+          path: libirmp.dylib
